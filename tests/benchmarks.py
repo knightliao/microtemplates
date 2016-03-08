@@ -1,12 +1,13 @@
 import os
 import timeit
-from jinja2 import Environment, FileSystemLoader, Template as JinjaTemplate
+
 from django.conf import settings
 from django.template import Context, Template as DjangoTemplate
-from django.template.loaders.filesystem import Loader as DjangoDefaultLoader
 from django.template.loaders.cached import Loader as DjangoCachedLoader
-from base import Template as MicroTemplate
+from django.template.loaders.filesystem import Loader as DjangoDefaultLoader
+from jinja2 import Environment, FileSystemLoader, Template as JinjaTemplate
 
+from pytemplate.core.base import Template as MicroTemplate
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 context = {
@@ -19,6 +20,7 @@ context = {
 }
 
 settings.configure(TEMPLATE_DIRS=[template_dir])
+
 
 def read_html(engine):
     html_file_path = os.path.join(template_dir, "%s.html" % engine)
@@ -62,9 +64,12 @@ def benchmark_jinja2_env():
 
 
 if __name__ == '__main__':
+
     number = 10000
     engines = ('microtemplates', 'django', 'django_default_loader', 'django_cached_loader', 'jinja2', 'jinja2_env')
+
     setup = "from __main__ import %s" % ', '.join(map(lambda t: 'benchmark_' + t, engines))
+
     for engine in engines:
         t = timeit.Timer("benchmark_%s()" % engine, setup=setup)
         time = t.timeit(number=number) / number

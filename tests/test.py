@@ -1,11 +1,12 @@
 import unittest
-from .base import Template
+
+from pytemplate.core.base import Template
 
 
 class EachTests(unittest.TestCase):
-
     def test_each_iterable_in_context(self):
         rendered = Template('{% each items %}<div>{{it}}</div>{% end %}').render(items=['alex', 'maria'])
+        print rendered
         self.assertEquals(rendered, '<div>alex</div><div>maria</div>')
 
     def test_each_iterable_as_literal_list(self):
@@ -26,7 +27,9 @@ class EachTests(unittest.TestCase):
 
     def test_nested_objects(self):
         context = {'lines': [{'name': 'l1'}], 'name': 'p1'}
-        rendered = Template('<h1>{{name}}</h1>{% each lines %}<span class="{{..name}}-{{it.name}}">{{it.name}}</span>{% end %}').render(**context)
+        rendered = Template(
+            '<h1>{{name}}</h1>{% each lines %}<span class="{{..name}}-{{it.name}}">{{it.name}}</span>{% end %}').render(
+            **context)
         self.assertEquals(rendered, '<h1>p1</h1><span class="p1-l1">l1</span>')
 
     def test_nested_tag(self):
@@ -35,7 +38,6 @@ class EachTests(unittest.TestCase):
 
 
 class IfTests(unittest.TestCase):
-
     def test_simple_if_is_true(self):
         rendered = Template('{% if num > 5 %}<div>more than 5</div>{% end %}').render(num=6)
         self.assertEquals(rendered, '<div>more than 5</div>')
@@ -45,11 +47,13 @@ class IfTests(unittest.TestCase):
         self.assertEquals(rendered, '')
 
     def test_if_else_if_branch(self):
-        rendered = Template('{% if num > 5 %}<div>more than 5</div>{% else %}<div>less than 5</div>{% end %}').render(num=6)
+        rendered = Template('{% if num > 5 %}<div>more than 5</div>{% else %}<div>less than 5</div>{% end %}').render(
+            num=6)
         self.assertEquals(rendered, '<div>more than 5</div>')
 
     def test_if_else_else_branch(self):
-        rendered = Template('{% if num > 5 %}<div>more than 5</div>{% else %}<div>less or equal to 5</div>{% end %}').render(num=4)
+        rendered = Template(
+            '{% if num > 5 %}<div>more than 5</div>{% else %}<div>less or equal to 5</div>{% end %}').render(num=4)
         self.assertEquals(rendered, '<div>less or equal to 5</div>')
 
     def test_nested_if(self):
@@ -75,7 +79,6 @@ def pow(m=2, e=2):
 
 
 class CallTests(unittest.TestCase):
-
     def test_no_args(self):
         rendered = Template('{% call pow %}').render(pow=pow)
         self.assertEquals(rendered, '4')
